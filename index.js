@@ -8,6 +8,7 @@ import authentication from "./middlewares/Authentication.js"
 import productRouter from "./routers/productRouter.js"
 import dotenv from "dotenv"
 dotenv.config()
+import cors from "cors"
 
 const mongoDBURI = process.env.MONGO_URI
 
@@ -18,11 +19,12 @@ mongoose.connect(mongoDBURI).then(
 )
 
 let app = express()
+app.use(cors())
 app.use(express.json())
 app.use(authentication)
-app.use("/student",studentRouter)
-app.use("/user",userRouter)
-app.use("/products",productRouter)
+app.use("/api/student",studentRouter)
+app.use("/api/user",userRouter)
+app.use("/api/products",productRouter)
 
 app.listen(3000,
     ()=>{console.log("server started successfully")}

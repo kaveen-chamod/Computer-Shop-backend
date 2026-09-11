@@ -34,7 +34,6 @@ export async function createUser(req, res) {
 }
 
 
-
 export async function loginUser(req, res) {
     try {
     const email = req.body.email
@@ -64,11 +63,14 @@ export async function loginUser(req, res) {
                 isAdmin: user.isAdmin
 
             },
-            process.env.JWT_KEY
+            process.env.JWT_KEY,
+            {
+             expiresIn : "24h"   
+            }
         )
 
         res.json({
-            message: "Login successful",token: token
+            message: "Login successful",token: token , isAdmin: user.isAdmin
         })
     } else {
         res.json({
