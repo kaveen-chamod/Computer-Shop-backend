@@ -49,12 +49,12 @@ export default function AdminAddProductForm(props){
             const altNameInarray = altNames.split(",").map((name) => name.trim());
 
             await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/products", {
-                productId: productID, 
+                productid: productID, 
                 name: productName,
-                altNames: altNameInarray,
+                altname: altNameInarray,
                 description: description,
                 price: Number(price),
-                labledPrice: Number(labledPrice),
+                labelledprice: Number(labledPrice),
                 images: uploadedImages,
                 isAvailable: isAvailable,
                 category: category,
@@ -68,7 +68,7 @@ export default function AdminAddProductForm(props){
             });
 
             toast.success("Product added successfully", { id: loadingToast });
-            navigate("/admin/products");
+            navigate("/admin/product");
 
         } catch (error) {
             console.error("Error adding product:", error);
@@ -80,10 +80,11 @@ export default function AdminAddProductForm(props){
     }
 
     return (
+        
         <div className="w-full h-full flex overflow-y-scroll items-start p-[50px] justify-center">
             <Toaster /> {}
-            <div className="w-[800px] bg-accent/90 p-[40px] rounded-2xl">
-                <h1 className="text-xl text-primary mb-4 font-bold">Add New Product</h1>
+            <div className="w-[800px] bg-accent/90 p-[40px] rounded-2xl border-1">
+                <h1 className="text-xl text-red-500 mb-4 font-bold">Add New Product</h1>
                 
                 <div className='w-full bg-primary p-[20px] flex flex-row flex-wrap rounded-xl justify-between '>
                     
@@ -142,8 +143,23 @@ export default function AdminAddProductForm(props){
 
                     <div className='my-[10px] w-[30%]'>
                         <label>Brand</label>
-                        <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} className='w-full p-[10px] h-[40px] border border-accent shadow-2xl rounded-xl focus:outline-none focus:ring-accent px-[20px] ' />
+                        <select value={brand} onChange={(e) => setBrand(e.target.value)} className='w-full p-[10px] h-[40px] border border-accent shadow-2xl rounded-xl focus:outline-none focus:ring-accent px-[20px] '>
+                            <option value="">Select a brand</option>
+                            <option value="Dell">Dell</option>
+                            <option value="HP">HP</option>
+                            <option value="Lenovo">Lenovo</option>
+                            <option value="Apple">Apple</option>
+                            <option value="Asus">Asus</option>
+                            <option value="Acer">Acer</option>
+                            <option value="MSI">MSI</option>
+                            <option value="Razer">Razer</option>
+                            <option value="Corsair">Nvidia</option>
+                            <option value="AMD">AMD</option>
+                            <option value="Intel">Intel</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
+                        
 
                     <div className='my-[10px] w-[30%]'>
                         <label>Model <span className="text-red-500">*</span></label>
@@ -163,19 +179,27 @@ export default function AdminAddProductForm(props){
                         </select>
                     </div>
 
-                    <Link to="/admin/products" className='w-[49%] h-[50px] hover:bg-red-600 bg-red-500 text-primary rounded-xl mt-4 transition-colors font-bold flex items-center justify-center '>
+                    <Link to="/admin/product" className='w-[49%] h-[50px] hover:bg-red-600 bg-red-500 text-primary rounded-xl mt-4 transition-colors font-bold flex items-center justify-center '>
                         Cancel
                     </Link>
 
                     <button 
-                        onClick={addProduct} 
                         disabled={loading}
-                        className={`w-[49%] h-[50px] font-bold rounded-xl mt-4 transition-colors border text-primary ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-accent/90 hover:bg-accent'}`}
+                        onClick={addProduct} 
+    
+                        className={`w-[49%] h-[50px] rounded-xl mt-4 transition-colors font-bold flex items-center justify-center ${
+        loading
+            ? 'bg-gray-400 text-primary cursor-not-allowed'
+            : 'bg-green-500 hover:bg-green-600 text-white cursor-pointer'
+            
+    }`}
                     >
                         {loading ? "Adding Product..." : "Add Product"}
+                        Add Product
                     </button>
                 </div>
             </div>
         </div>
+    
     );
 }
