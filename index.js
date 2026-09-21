@@ -9,6 +9,7 @@ import productRouter from "./routers/productRouter.js"
 import dotenv from "dotenv"
 dotenv.config()
 import cors from "cors"
+import orderRouter from "./routers/orderRouter.js"
 
 const mongoDBURI = process.env.MONGO_URI
 
@@ -25,6 +26,7 @@ app.use(authentication)
 app.use("/api/student",studentRouter)
 app.use("/api/user",userRouter)
 app.use("/api/products",productRouter)
+app.use("/api/orders", orderRouter);
 
 app.listen(3000,
     ()=>{console.log("server started successfully")}

@@ -54,5 +54,6 @@ const productSchema = new mongoose.Schema({
     }   
 })
 
-const Product = mongoose.model("product",productSchema)
-export default Product
+// මෙන්න මේ විදියට || ලකුණ දාලා වෙනස් කරන්න
+const Product = mongoose.models.products || mongoose.model("products", productSchema);
+export default Product;

@@ -4,6 +4,7 @@ import { BiPlus } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Loader from "../../components/loader"; 
 import ProductDeleteButton from "../../components/productDeleteButton";
+import getFormattedPrice from "../../utils/priceFormatter";
 
 export default function AdminProductsPage(props) {
   const [products, setProducts] = useState([]);
@@ -32,13 +33,13 @@ export default function AdminProductsPage(props) {
   }, [loaded]);
 
   return (
-    <div className="w-full min-h-screen bg-gray-100 flex justify-center p-10 relative">
+    <div className="w-full min-h-screen bg-primary flex justify-center p-10 relative">
 
       {/* Rounded Card Container */}
       <div className="w-full max-w-7xl bg-white shadow-2xl rounded-2xl overflow-hidden relative pb-16">
 
         {/* Header */}
-        <div className="px-8 py-6 bg-accent text-primary">
+        <div className="px-8 py-6 bg-accent text-blue-500 font-semibold text-lg flex items-center gap-2">
           <h1 className="text-2xl font-bold tracking-wide">
             Product Management
           </h1>
@@ -100,12 +101,12 @@ export default function AdminProductsPage(props) {
                         </td>
 
                         <td className="px-5 py-4 font-bold text-green-600">
-                          Rs. {item.price}
+                          {getFormattedPrice(item.price)}
                         </td>
 
                         {/* Labelled Price Column */}
                         <td className="px-5 py-4 text-gray-400 line-through">
-                          Rs. {item.labelledprice}
+                          {getFormattedPrice(item.labelledPrice)}
                         </td>
 
                         <td className="px-5 py-4">

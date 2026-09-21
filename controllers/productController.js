@@ -91,3 +91,52 @@ export async function updateProduct(req,res) {
     
 }
 
+
+// Product එකක් ID එකෙන් ලබාගැනීමේ Function එක
+export async function getProductById(req, res) {
+    try {
+        const productId = req.params.productid;
+        
+        // ⚠️ ඔබගේ Database එකේ ID column එකේ නම productid ද නැතිනම් productId ද යන්න අනුව මෙය වෙනස් විය හැක.
+        // ගැටළුවක් මඟහරවා ගැනීමට $or භාවිතා කර ඇත.
+        const product = await Product.findOne({ 
+            $or: [
+                { productId: productId },
+                { productid: productId }
+            ]
+        });
+
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.json(product);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching product", error: error.message });
+    }
+}
+
+
+
+// නිෂ්පාදන සෙවීම සඳහා (Search Controller)
+export async function searchProducts(req, res) {
+    try {
+        const query = req.params.query;
+        // නම හෝ වෙනත් ෆීල්ඩ් එකක් අනුව MongoDB එකෙන් සෙවීම (Regex භාවිතයෙන් අකුරු කොටසක් ගැළපුණත් පෙන්වයි)
+        const products = await Product.find({
+            name: { $regex: query, $options: "i" } 
+        });
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: "Error searching products", error: error.message });
+    }
+}
+
+export async function getProducts(req, res) {
+    try {
+        const products = await Product.find();
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching products", error: error.message });
+    }
+}
