@@ -31,7 +31,7 @@ export default function ProductPage() {
             ) : (
                 <div className="w-full flex justify-center flex-row flex-wrap">
 
-                    {/* Search Bar - විනිවිද පෙනෙන (Transparent/Blur) Background එක සහිතව */}
+                    
                     <div className="w-full h-[100px] sticky top-0 bg-white/80 backdrop-blur-md flex justify-center items-center mb-4 z-40">
                         <input
                             type="text"

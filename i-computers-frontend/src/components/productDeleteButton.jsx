@@ -16,7 +16,7 @@ export default function ProductDeleteButton(props) {
 
     axios
       .delete(
-        // ⚠️ /products වෙනුවට /api/products ලෙස වෙනස් කළා
+       
         import.meta.env.VITE_BACKEND_URL + "/api/products/" + productId,
         {
           headers: {
@@ -28,7 +28,7 @@ export default function ProductDeleteButton(props) {
         toast.success("Product deleted successfully");
         setIsDeleting(false);
         setIsMessageOpen(false);
-        reload(); // Table එක අලුත් කිරීම
+        reload(); 
       })
       .catch((error) => {
         console.error("Delete error:", error);
@@ -48,7 +48,7 @@ export default function ProductDeleteButton(props) {
         Delete
       </button>
 
-      {/* ⚠️ z-50 එකතු කළා Modal එක උඩින්ම පෙන්වන්න */}
+      
       {isMessageOpen && (
         <div className="w-[100vw] h-screen fixed top-0 left-0 bg-black/60 flex justify-center items-center z-50">
           

@@ -86,7 +86,7 @@ export default function AdminAddProductForm(props){
             <div className="w-[800px] bg-accent/90 p-[40px] rounded-2xl border-1">
                 <h1 className="text-xl text-red-500 mb-4 font-bold">Add New Product</h1>
                 
-                <div className='w-full bg-primary p-[20px] flex flex-row flex-wrap rounded-xl justify-between '>
+                <div className='w-full bg-blue-50 p-[20px] flex flex-row flex-wrap rounded-xl justify-between '>
                     
                     <div className='my-[10px] w-[40%]'>
                         <label>Product ID <span className="text-red-500">*</span></label>

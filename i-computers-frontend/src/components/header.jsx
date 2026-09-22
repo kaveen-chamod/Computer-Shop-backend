@@ -4,7 +4,7 @@ import { BiShoppingBag, BiMenu, BiX } from "react-icons/bi";
 import UserData from "./userData";
 
 export default function Header() {
-    // Mobile menu එක open/close කිරීම පාලනය කිරීමට
+    
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
@@ -19,7 +19,7 @@ export default function Header() {
                 />
             </Link>
 
-            {/* Center Navigation Links (Desktop පමණක් පෙනේ) */}
+            {/* Navigation Links (Hidden on Mobile) */}
             <nav className="hidden md:flex gap-10 text-primary font-bold text-lg tracking-wide">
                 <Link to="/" className="hover:opacity-70 hover:-translate-y-0.5 transition-all duration-300">
                     Home
@@ -41,7 +41,7 @@ export default function Header() {
                 {/* User Dropdown Component */}
                 <UserData />
 
-                {/* Mobile Hamburger Button (Mobile එකේදී පමණක් පෙනේ) */}
+                {/* Mobile Menu Button */}
                 <button 
                     className="md:hidden text-primary text-[28px] focus:outline-none hover:opacity-70 transition-all z-[110] relative"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -49,8 +49,7 @@ export default function Header() {
                     {isMobileMenuOpen ? <BiX /> : <BiMenu />}
                 </button>
             </div>
-            
-            {/* Dark Overlay (Menu එක Open වූ විට පසුබිම අඳුරු කිරීමට) */}
+             
             {isMobileMenuOpen && (
                 <div 
                     className="fixed inset-0 bg-black/40 z-[90] md:hidden transition-opacity"

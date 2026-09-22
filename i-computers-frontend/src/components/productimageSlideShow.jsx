@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function ImageSlider(props) {
-    // පින්තූර නැත්නම් default පින්තූරයක් ලබා දීම
+    
     const images = props.images && props.images.length > 0 ? props.images : ["/default.png"];
     
     const [activeIndex, setActiveIndex] = useState(0);

@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { BsChevronUp } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
-// අලුතින් හැදූ CreateOrder Component එක Import කරගැනීම (ෆෝල්ඩර මාර්ගය නිවැරදි කරගන්න)
+
 import CreateOrder from "../components/createOrder"; 
 
 export default function CheckoutPage() {
     const location = useLocation();
     const navigate = useNavigate();
     
-    // Initialize state with location state or empty array
+   
     const [cart, setCart] = useState(location.state || []);
 
     // Calculate Grand Total efficiently
@@ -145,7 +145,7 @@ export default function CheckoutPage() {
                         </div>
                     </div>
 
-                    {/* මෙතන තමයි අපි අලුතින් හැදූ CreateOrder Button / Modal එක render වෙන්නේ */}
+                    
                     <CreateOrder cart={cart} />
                     
                 </div>
@@ -155,7 +155,7 @@ export default function CheckoutPage() {
                 <div className="mt-20 text-slate-400 text-center">
                     <p className="text-xl">Your cart is empty</p>
                     <button 
-                        onClick={() => navigate("/products")}
+                        onClick={() => navigate("/checkout")}
                         className="mt-4 text-slate-800 underline font-semibold cursor-pointer hover:text-slate-600"
                     >
                         Go back to shopping

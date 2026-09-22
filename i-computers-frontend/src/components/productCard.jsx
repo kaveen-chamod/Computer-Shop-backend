@@ -39,13 +39,13 @@ export default function ProductCard(props) {
           {
             labledPrice > product.price && (
               <h2 className="text-secondary/80 line-through decoration-amber-600 decoration-2 mr-2 text-sm">
-                {/* 2. getFormattedPrice භාවිතය */}
+                {/* 2. getFormattedPrice  */}
                 {getFormattedPrice(labledPrice)}
               </h2>
             )
           }
           <h2 className="text-accent font-bold text-2xl">
-            {/* 3. getFormattedPrice භාවිතය */}
+            {/* 3. getFormattedPrice  */}
             {getFormattedPrice(product.price)}
           </h2>
         </div>
@@ -54,7 +54,7 @@ export default function ProductCard(props) {
       {/* 4. Bottom Overlay Div - Uses group-hover:opacity-100 to show up when the card is hovered */}
       <div className="w-full h-[150px] bg-white/95 bottom-0 absolute flex flex-row justify-center items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
         <button 
-          // Link එක ඇතුලේ තියෙන නිසා මෙතන to="" අවශ්‍ය නැත
+          
           className="px-4 py-2 cursor-pointer bg-accent text-white font-bold rounded-md hover:bg-accent/80 transition-colors duration-200 h-[50px] w-[150px] text-center flex justify-center items-center shadow-lg"
         >
           View Details

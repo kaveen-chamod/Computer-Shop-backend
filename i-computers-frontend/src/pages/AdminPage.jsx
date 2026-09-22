@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
-import { FiShoppingCart, FiUsers, FiLogOut } from "react-icons/fi"; // FiLogOut icon එකතු කළා
+import { FiShoppingCart, FiUsers, FiLogOut } from "react-icons/fi"; 
 import { RiProductHuntLine } from "react-icons/ri";
-import toast from "react-hot-toast"; // Notification එකක් පෙන්වීමට
-
+import toast from "react-hot-toast"; 
 import AdminOrders from "./Admin/AdminOrders";
 import AdminProduct from "./Admin/AdminProduct";
 import AdminUser from "./Admin/AdminUsers";
@@ -38,13 +37,13 @@ export default function AdminPage() {
         }
     }, [navigate]);
 
-    // Sign out function එක
+    // Sign out function 
     const handleSignOut = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         localStorage.removeItem("profilePic");
         toast.success("Admin signed out successfully!");
-        navigate("/"); // Home page එකට යවනවා
+        navigate("/");
     };
 
     if (!isAuthorized) {
@@ -54,11 +53,9 @@ export default function AdminPage() {
     return (
         <div className="w-full h-full flex bg-primary min-h-screen">
 
-            {/* SIDEBAR */}
-            {/* justify-between යොදාගෙන උඩින් ලින්ක් සහ පහළින් Sign Out බොත්තම තැබීමට සකසා ඇත */}
+           
             <div className="w-75 h-full bg-white flex flex-col justify-between shadow-xl z-10">
 
-                {/* Top Section: Logo & Links */}
                 <div>
                     <div className="w-full h-25 py-4 px-2 border-b border-gray-100 flex justify-center items-center">
                         <img src="/logo.png" className="h-full object-contain max-h-[80px]" alt="Isuri Computers" />

@@ -7,7 +7,7 @@ export default function AdminUser() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("customers"); 
-    // අලුත්: Search Query සඳහා State එකක්
+
     const [searchQuery, setSearchQuery] = useState("");
 
     const fetchUsers = async () => {
@@ -81,7 +81,7 @@ export default function AdminUser() {
         return <div className="w-full h-full flex justify-center items-center text-xl font-bold text-gray-400">Loading Users...</div>;
     }
 
-    // Active Tab සහ Search Query එක මත Users ලාව පෙරහන් (Filter) කිරීම
+    
     const displayedUsers = users.filter(user => {
         const matchesTab = activeTab === "admins" ? user.isAdmin : !user.isAdmin;
         
@@ -103,7 +103,7 @@ export default function AdminUser() {
                 </span>
             </div>
 
-            {/* Tabs සහ Search Bar එක එකම පේළියක පෙන්වීමට */}
+            
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 border-b border-gray-200 pb-4">
                 <div className="flex gap-4">
                     <button 
@@ -120,7 +120,7 @@ export default function AdminUser() {
                     </button>
                 </div>
 
-                {/* අලුත්: Search Bar එක */}
+                
                 <div className="relative w-full md:w-[300px]">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
                         <FiSearch />

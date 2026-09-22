@@ -3,29 +3,32 @@ import { useEffect, useState } from "react";
 import Loader from "../../components/loader";
 import ViewOrderInfo from "../../components/viewOrderInfo";
 import getFormattedPrice from "../../utils/priceFormatter";
-// අලුතින් හැදූ Date formatter එක Import කරගැනීම
 import getFormattedDate from "../../Utils/Date-Format";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
+  const fetchOrders = () => {
+    const token = localStorage.getItem("token");
+
+    axios.get(import.meta.env.VITE_BACKEND_URL + "/api/orders", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        setOrders(response.data);
+        setLoaded(true);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   useEffect(() => {
     if (!loaded) {
-      const token = localStorage.getItem("token");
-
-      axios.get(import.meta.env.VITE_BACKEND_URL + "/api/orders", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => {
-          setOrders(response.data);
-          setLoaded(true);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      fetchOrders();
     }
   }, [loaded]);
 
@@ -74,7 +77,6 @@ export default function AdminOrdersPage() {
                     </td>
 
                     <td className="px-5 py-4 font-semibold text-accent whitespace-nowrap">
-                      {/* අලුත් Date formatter එක මෙහි යොදා ඇත */}
                       {getFormattedDate(order.date)}
                     </td>
 

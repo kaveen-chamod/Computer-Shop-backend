@@ -1,98 +1,84 @@
-import User from "../Models/user.js"
-import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import User from "../Models/user.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { createClient } from "@supabase/supabase-js";
-import dotenv, { config } from "dotenv"
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 import crypto from "crypto";
+import { OAuth2Client } from "google-auth-library";
 
-dotenv.config()
-
+dotenv.config();
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-
-
+// 1. Create User
 export async function createUser(req, res) {
     try {
-        const existing = await User.findOne({ email: req.body.email })
+        const existing = await User.findOne({ email: req.body.email });
         if (existing != null) {
-            res.json({
-                message: "User already exists"
-            })
-            return
+            return res.json({ message: "User already exists" });
         }
-        const passwordHash = await bcrypt.hashSync(req.body.password,10)
+        const passwordHash = await bcrypt.hashSync(req.body.password, 10);
         const newUser = new User({
             email: req.body.email,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             password: passwordHash
-        })
-        await newUser.save()
-        res.json({
-            message: "User created successfully"
-        })
+        });
+        await newUser.save();
+        res.json({ message: "User created successfully" });
     } catch (err) {
         res.json({
             message: "Error creating user",
             error: err.message
-        })
+        });
     }
 }
 
-
+// 2. Login User
 export async function loginUser(req, res) {
     try {
-    const email = req.body.email
-    const password = req.body.password
+        const email = req.body.email;
+        const password = req.body.password;
 
-    if(email == null || password == null){
-        res.status(400).json({
-            message: "Email and password are required"
-        })
-        return  
-    }
-    const user = await User.findOne({ email: email })
+        if (email == null || password == null) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+        const user = await User.findOne({ email: email });
 
-    if (user == null){
-        res.status(404).json({
-            message: "User not found"
-        })
-        return
-    }
-    const isPasswordValid = await bcrypt.compareSync(password, user.password)
-    if (isPasswordValid) {
-        const token = jwt.sign(
-            {
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
+        if (user == null) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const isPasswordValid = await bcrypt.compareSync(password, user.password);
+        if (isPasswordValid) {
+            const token = jwt.sign(
+                {
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    isAdmin: user.isAdmin,
+                    user: user
+                },
+                process.env.JWT_KEY || process.env.JWT_SECRET,
+                { expiresIn: "24h" }
+            );
+
+            res.json({
+                message: "Login successful",
+                token: token,
                 isAdmin: user.isAdmin,
                 user: user
-
-            },
-            process.env.JWT_KEY,
-            {
-             expiresIn : "24h"   
-            }
-        )
-
-        res.json({
-            message: "Login successful",token: token , isAdmin: user.isAdmin
-        })
-    } else {
-        res.status(401).json({
-            message: "Invalid password"
-        })
-    }}
-    catch (err) {
+            });
+        } else {
+            res.status(401).json({ message: "Invalid password" });
+        }
+    } catch (err) {
         res.json({
             message: "Error logging in",
             error: err.message
-        })
+        });
     }
 }
-
 
 export function isAdmin(req) {
     if (req.user == null) {
@@ -101,124 +87,105 @@ export function isAdmin(req) {
     return req.user.isAdmin;
 }
 
+// 3. Change Password
 export async function changePassword(req, res) {
     try {
-        // Frontend එකෙන් එවන Header එකෙන් Token එක අරගන්නවා
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             return res.status(401).json({ message: "No token provided" });
         }
 
         const token = authHeader.split(" ")[1];
-        
-        // Token එක Decode කරලා User ගේ Email එක ගන්නවා
-        const decoded = jwt.verify(token, process.env.JWT_KEY);
+        const decoded = jwt.verify(token, process.env.JWT_KEY || process.env.JWT_SECRET);
         const userEmail = decoded.email;
 
         const { currentPassword, newPassword } = req.body;
 
-        // User ව Database එකෙන් හොයනවා
         const user = await User.findOne({ email: userEmail });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // පරණ Password එක හරිද කියලා බලනවා
         const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
         if (!isPasswordValid) {
             return res.status(400).json({ message: "Incorrect current password" });
         }
 
-        // අලුත් Password එක Hash කරනවා
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        
-        // Database එකේ Save කරනවා
         user.password = hashedNewPassword;
         await user.save();
 
         res.json({ message: "Password updated successfully" });
-
     } catch (error) {
         res.status(500).json({ message: "Error changing password", error: error.message });
     }
 }
 
-
+// 4. Update Profile Picture
 export async function updateProfilePicture(req, res) {
     try {
-        // 1. Token එක පරීක්ෂා කිරීම
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             return res.status(401).json({ message: "No token provided" });
         }
         const token = authHeader.split(" ")[1];
-        const decoded = jwt.verify(token, process.env.JWT_KEY);
+        const decoded = jwt.verify(token, process.env.JWT_KEY || process.env.JWT_SECRET);
         const userEmail = decoded.email;
 
-        // 2. ෆයිල් එක (Image) ඇවිත්දැයි බැලීම
-        const file = req.file;
-        if (!file) {
-            return res.status(400).json({ message: "No image file provided" });
-        }
+        let imageUrl = req.body.image;
 
-        // 3. Supabase වෙත Upload කිරීම
-        // අද්විතීය නමක් සෑදීම (Date.now යොදාගෙන)
-        const fileName = `profiles/${Date.now()}-${file.originalname.replace(/\s+/g, '-')}`;
-        
-        const { data, error } = await supabase.storage
-            .from("avatars") // ⚠️ ඔයාගේ Supabase Bucket එකේ නම මෙතන දෙන්න
-            .upload(fileName, file.buffer, {
-                contentType: file.mimetype,
-            });
-
-        if (error) {
-            throw error;
-        }
-
-        // 4. Upload කළ පින්තූරයේ Public URL එක ලබාගැනීම
-        const { data: publicUrlData } = supabase.storage
-            .from("avatars")
-            .getPublicUrl(fileName);
+        if (req.file) {
+            const file = req.file;
+            const fileName = `profiles/${Date.now()}-${file.originalname.replace(/\s+/g, '-')}`;
             
-        const imageUrl = publicUrlData.publicUrl;
+            const { data, error } = await supabase.storage
+                .from("avatars")
+                .upload(fileName, file.buffer, { contentType: file.mimetype });
 
-        // 5. MongoDB හි User ගේ දත්ත යාවත්කාලීන කිරීම (image ෆීල්ඩ් එකට URL එක දැමීම)
+            if (error) throw error;
+
+            const { data: publicUrlData } = supabase.storage
+                .from("avatars")
+                .getPublicUrl(fileName);
+                
+            imageUrl = publicUrlData.publicUrl;
+        }
+
+        if (!imageUrl) {
+            return res.status(400).json({ message: "No image provided" });
+        }
+
         const user = await User.findOneAndUpdate(
             { email: userEmail },
-            { image: imageUrl }, 
-            // 'new: true' වෙනුවට 'returnDocument: "after"' යොදන්න
-            { returnDocument: "after" } 
+            { image: imageUrl },
+            { returnDocument: "after" }
         );
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        res.json({ 
-            message: "Profile picture updated successfully", 
-            imageUrl: imageUrl 
+        res.json({
+            message: "Profile picture updated successfully",
+            image: imageUrl,
+            user
         });
-
     } catch (error) {
         console.error("Profile upload error:", error);
         res.status(500).json({ message: "Error updating profile picture", error: error.message });
     }
 }
 
-
-
-
-// සියලුම පරිශීලකයන් ලබා ගැනීම
+// 5. Admin Management
 export async function getUsers(req, res) {
     try {
-        const users = await User.find().select("-password"); // Password එක හැර අනිත් දත්ත යවයි
+        const users = await User.find().select("-password");
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: "Error fetching users" });
     }
 }
 
-// පරිශීලකයෙකු මකා දැමීම
 export async function deleteUser(req, res) {
     try {
         await User.findByIdAndDelete(req.params.id);
@@ -228,7 +195,6 @@ export async function deleteUser(req, res) {
     }
 }
 
-// පරිශීලකයෙකු Block කිරීම
 export async function blockUser(req, res) {
     try {
         await User.findByIdAndUpdate(req.params.id, { isBlocked: true });
@@ -238,7 +204,6 @@ export async function blockUser(req, res) {
     }
 }
 
-// පරිශීලකයෙකු Unblock කිරීම
 export async function unblockUser(req, res) {
     try {
         await User.findByIdAndUpdate(req.params.id, { isBlocked: false });
@@ -248,16 +213,13 @@ export async function unblockUser(req, res) {
     }
 }
 
-// පරිශීලකයෙකු Admin කිරීම හෝ Admin අයිතිය ඉවත් කිරීම
 export async function toggleAdmin(req, res) {
     try {
         const user = await User.findById(req.params.id);
-        
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // දැනට තියෙන තත්ත්වය (isAdmin) අනෙක් පැත්තට හැරවීම (true නම් false, false නම් true)
         user.isAdmin = !user.isAdmin;
         await user.save();
 
@@ -267,7 +229,7 @@ export async function toggleAdmin(req, res) {
     }
 }
 
-
+// 6. Forgot Password (OTP නිර්මාණය කර Gmail එකට යැවීම)
 export async function forgotPassword(req, res) {
     try {
         const { email } = req.body;
@@ -276,23 +238,52 @@ export async function forgotPassword(req, res) {
             return res.status(404).json({ message: "User with this email not found" });
         }
 
-        // අංක 6ක අහඹු OTP එකක් සෑදීම
+        // අංක 6ක OTP කේතයක් සෑදීම
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // OTP එක සහ එහි කල් ඉකුත් වීමේ කාලය (උදා: විනාඩි 10ක්) Database එකේ Save කිරීම
+        // OTP එක සහ විනාඩි 10 කල් ඉකුත්වීමේ කාලය DB එකේ Save කිරීම
         user.resetPasswordOtp = otp;
         user.otpExpires = Date.now() + 10 * 60 * 1000; 
         await user.save();
 
-        // TODO: මෙතැනදී Nodemailer භාවිතයෙන් user.email වෙත 'otp' එක ඊමේල් කරන්න.
+        // Nodemailer Transporter සැකසීම
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        // ඊමේල් පණිවිඩය
+        const mailOptions = {
+            from: `"i-Computers" <${process.env.EMAIL_USER}>`,
+            to: user.email,
+            subject: "Your Password Reset OTP Code",
+            html: `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 500px; border: 1px solid #e2e8f0; border-radius: 10px;">
+                    <h2 style="color: #2563eb; text-align: center;">i-Computers</h2>
+                    <p>Hello ${user.firstName || "Customer"},</p>
+                    <p>You requested a password reset. Use the OTP code below to verify your request:</p>
+                    <div style="background: #f8fafc; border: 1px dashed #cbd5e1; padding: 15px; font-size: 26px; font-weight: bold; letter-spacing: 6px; text-align: center; border-radius: 8px; margin: 20px 0; color: #0f172a;">
+                        ${otp}
+                    </div>
+                    <p style="font-size: 12px; color: #64748b;">This OTP is valid for 10 minutes. If you did not request this, please ignore this email.</p>
+                </div>
+            `
+        };
+
+        // සැබැවින්ම ඊමේල් එක යැවීම
+        await transporter.sendMail(mailOptions);
         
         res.json({ message: "OTP sent to your email successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Error sending OTP", error: error.message });
+        console.error("Nodemailer error:", error);
+        res.status(500).json({ message: "Error sending OTP email", error: error.message });
     }
 }
 
-// 2. Reset Password (OTP පරීක්ෂා කර අලුත් මුරපදය දැමීම)
+// 7. Reset Password (OTP පරීක්ෂා කර Password එක වෙනස් කිරීම)
 export async function resetPassword(req, res) {
     try {
         const { email, otp, newPassword } = req.body;
@@ -302,16 +293,56 @@ export async function resetPassword(req, res) {
             return res.status(400).json({ message: "Invalid or expired OTP" });
         }
 
-        // අලුත් Password එක Hash කිරීම
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
         
         user.password = hashedNewPassword;
-        user.resetPasswordOtp = undefined; // OTP එක ඉවත් කිරීම
+        user.resetPasswordOtp = undefined;
         user.otpExpires = undefined;
         await user.save();
 
         res.json({ message: "Password reset successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error resetting password", error: error.message });
+    }
+}
+
+// 8. Google OAuth Login
+const client = new OAuth2Client("596108182923-nhnkrad78ucrtsb37h6dj23mmrlfum22.apps.googleusercontent.com");
+
+export async function googleLogin(req, res) {
+    try {
+        const { email, firstName, lastName, image } = req.body;
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            user = new User({
+                firstName: firstName || "User",
+                lastName: lastName || "",
+                email: email,
+                image: image || "",
+                isAdmin: false,
+                isBlocked: false,
+                password: "google_login_authenticated"
+            });
+            await user.save();
+        }
+
+        if (user.isBlocked) {
+            return res.status(403).json({ message: "Account is blocked. Contact Admin." });
+        }
+
+        const token = jwt.sign(
+            { id: user._id, email: user.email, isAdmin: user.isAdmin },
+            process.env.JWT_KEY || process.env.JWT_SECRET || "your_secret_key",
+            { expiresIn: "7d" }
+        );
+
+        res.status(200).json({
+            message: "Google login successful",
+            token,
+            user
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Google login failed", error: error.message });
     }
 }

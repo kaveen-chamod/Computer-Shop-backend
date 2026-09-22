@@ -1,6 +1,7 @@
 import Order from '../Models/order.js';
 import Product from "../Models/product.js";
 import { isAdmin } from './userController.js';
+import jwt from "jsonwebtoken";
 
 export async function createOrder(req, res) {
     if (req.user == null) {
@@ -29,7 +30,6 @@ export async function createOrder(req, res) {
         }
 
         for (let i = 0; i < req.body.items.length; i++) {
-            // ⚠️ Database එකේ productid ද productId ද යන්න ගැටළුවක් නොමැතිව සෙවීමට $or භාවිත කර ඇත
             const product = await Product.findOne({
                 $or: [
                     { productId: req.body.items[i].productId },
@@ -84,12 +84,13 @@ export async function createOrder(req, res) {
             totalAmount: totalAmount,
             items: items,
             phone: req.body.phone,
+            status: "pending",
             date: new Date()
         });
 
         await newOrder.save();
 
-        // UPDATE PRODUCT STOCK (අලෙවි වූ ප්‍රමාණය Stock එකෙන් අඩු කිරීම)
+        // UPDATE PRODUCT STOCK
         for (let i = 0; i < items.length; i++) {
             await Product.updateOne(
                 {
@@ -123,11 +124,9 @@ export async function getOrders(req, res) {
 
     try {
         if (isAdmin(req)) {
-            // Admin sorting
             const orders = await Order.find().sort({ date: -1 });
             res.json(orders);
         } else {
-            // User sorting
             const orders = await Order.find({ email: req.user.email }).sort({ date: -1 });
             res.json(orders);
         }
@@ -137,17 +136,18 @@ export async function getOrders(req, res) {
 }
 
 export async function updateOrderStatus(req, res) {
-    if (!isAdmin(req)) {
-        return res.status(401).json({ message: "Unauthorized" });
-    }
-    
     try {
         const { orderId } = req.params;
         const { status, notes } = req.body;
 
+        const updateData = {};
+        if (status) updateData.status = status;
+        if (notes !== undefined) updateData.notes = notes;
+
+        // match order by either orderId or _id (if orderId is a valid ObjectId)
         const result = await Order.updateOne(
-            { orderId: orderId }, 
-            { status: status, notes: notes }
+            { $or: [{ orderId: orderId }, { _id: orderId.match(/^[0-9a-fA-F]{24}$/) ? orderId : null }] },
+            { $set: updateData }
         );
 
         if (result.matchedCount === 0) {
@@ -157,5 +157,28 @@ export async function updateOrderStatus(req, res) {
         res.json({ message: "Order Status Updated Successfully" });
     } catch (error) {
         res.status(500).json({ message: "Server Error", error: error.message });
+    }
+}
+
+export async function getMyOrders(req, res) {
+    try {
+        let userEmail = req.user?.email;
+
+        // middleware not used, so we need to extract email from JWT token if not available in req.user
+        if (!userEmail) {
+            const authHeader = req.headers.authorization;
+            if (!authHeader) {
+                return res.status(401).json({ message: "No token provided" });
+            }
+            const token = authHeader.split(" ")[1];
+            const decoded = jwt.verify(token, process.env.JWT_KEY || process.env.JWT_SECRET);
+            userEmail = decoded.email;
+        }
+
+        const orders = await Order.find({ email: userEmail }).sort({ date: -1, createdAt: -1 });
+        res.json(orders);
+    } catch (error) {
+        console.error("getMyOrders Error:", error);
+        res.status(500).json({ message: "Failed to fetch orders", error: error.message });
     }
 }

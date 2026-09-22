@@ -9,11 +9,11 @@ export default function HomeContent() {
     const [products, setProducts] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
-    // මුල් පිටුවට අවශ්‍ය නිෂ්පාදන (Products) Backend එකෙන් ලබාගැනීම
+    // Fetch products from the backend API
     useEffect(() => {
         axios.get(import.meta.env.VITE_BACKEND_URL + "/api/products")
             .then((response) => {
-                // අවශ්‍ය නම් මුල් නිෂ්පාදන 8ක් පමණක් පෙන්වීමට .slice(0, 8) පාවිච්චි කළ හැක
+                // Limit to 8 products for the home page
                 setProducts(response.data.slice(0, 8) || response.data);
                 setLoaded(true);
             })

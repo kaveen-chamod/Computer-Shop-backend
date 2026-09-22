@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        default: Date.now // 'required' අවශ්‍ය නැත, මන්ද default අගයක් ලබා දී ඇති බැවිනි
+        default: Date.now 
     },
     totalAmount: {
         type: Number,

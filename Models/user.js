@@ -37,8 +37,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-}});
+    },
+ 
+    resetPasswordOtp: {
+        type: String,
+        default: null
+    },
+    otpExpires: {
+        type: Date,
+        default: null
+    }
+}, { timestamps: true });
+
 const User = mongoose.model('User', userSchema);
 
 export default User;
-

@@ -36,7 +36,6 @@ export default function CreateOrder({ cart }) {
             quantity: item.quantity
         }));
 
-        // ⚠️ API route එක ඔබගේ backend එකට අනුව සකසා ගන්න (/api/orders හෝ /orders)
         axios.post(import.meta.env.VITE_BACKEND_URL + "/api/orders", {
             name: name,
             address: address,
@@ -110,7 +109,10 @@ export default function CreateOrder({ cart }) {
                         />
 
                         <button 
-                            onClick={submitOrder}
+                            onClick={() => {
+                                submitOrder();
+                                navigate("/my-orders");
+                            }}
                             className="w-full bg-[#071952] hover:bg-[#051138] text-white font-bold py-3 rounded-md mt-4 transition-colors cursor-pointer shadow-md text-sm"
                         >
                             Confirm Order

@@ -9,7 +9,7 @@ export default function CartPage() {
     const [cart, setCart] = useState(getCart());
 
     const updateQuantity = (item, amount) => {
-        // අයිතම ගණන 1 ක් ඇති විට තවත් අඩු කිරීමට උත්සාහ කළහොත් එය නතර කරයි
+        
         if (item.quantity === 1 && amount === -1) {
             return;
         }
@@ -17,7 +17,7 @@ export default function CartPage() {
         setCart(getCart());
     };
 
-    // අයිතමය සම්පූර්ණයෙන්ම මකා දැමීමේ Function එක
+    
     const deleteItem = (productId) => {
         const currentCart = getCart();
         const updatedCart = currentCart.filter(item => item.productId !== productId);
@@ -26,13 +26,13 @@ export default function CartPage() {
     };
 
     return (
-        // Mobile view එකේදී කාඩ්පත් අතර පරතරය තබා ගැනීමට gap-6 යොදා ඇත
+        
         <div className="w-full min-h-screen bg-gray-50 flex flex-col items-center p-4 lg:p-6 gap-6 lg:gap-4">
             <h1 className="text-3xl font-bold self-start max-w-4xl mx-auto w-full lg:w-[60%] mb-4">
                 Shopping Cart
             </h1>
 
-            {/* Index වෙනුවට item.productId යොදා React Key Error එක මඟහැර ඇත */}
+            
             {cart.map((item) => {
                 
                 const itemLabelledPrice = item.labelledprice || item.labledPrice || 0;
@@ -42,7 +42,6 @@ export default function CartPage() {
                         key={item.productId}
                         className="lg:w-[60%] bg-white w-full max-w-4xl relative rounded-2xl border border-slate-100 shadow-lg hover:shadow-md lg:h-[150px] transition-shadow flex items-center p-2 lg:p-0 lg:overflow-hidden mt-2 lg:mt-0"
                     >
-                        {/* Mobile Title - absolute -top-3 යොදා වෙනත් කාඩ්පත් වල නොවැදෙන සේ සකසා ඇත */}
                         <h1 className="absolute -top-3 w-auto py-[2px] px-[8px] rounded-lg shadow-sm bg-white left-2 lg:hidden font-bold text-xs text-slate-600 truncate z-10 border border-slate-100">
                             {item.name}
                         </h1>
@@ -147,7 +146,7 @@ export default function CartPage() {
                             </span>
                         </div>
                     </div>
-                    {/* state={cart} යැවීම ඉවත් කර ඇත. Checkout Page එක කෙළින්ම Local Storage හරහා දත්ත ලබා ගත හැක */}
+                    
                     <Link 
                         to="/checkout" 
                         className="w-full sm:w-auto bg-slate-900 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-all text-center active:scale-95"

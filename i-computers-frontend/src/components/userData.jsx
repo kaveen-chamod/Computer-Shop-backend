@@ -11,7 +11,7 @@ export default function UserData() {
         
         if (token) {
             try {
-                // Token එක decode කර ඒකෙ තියෙන දත්ත (firstName) ලබා ගැනීම
+                
                 const payloadBase64 = token.split('.')[1];
                 const decodedJson = atob(payloadBase64);
                 const decodedUser = JSON.parse(decodedJson);
@@ -49,9 +49,9 @@ export default function UserData() {
                             } else if (val === "logout") {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    localStorage.removeItem("profilePic"); // ⚠️ මේ පේළිය අලුතින් දාන්න
+    localStorage.removeItem("profilePic"); 
     setUser(null);
-    navigate("/login");
+    navigate("/signin");
 }
                             
                             setTimeout(() => setSelectedOption("me"), 100);

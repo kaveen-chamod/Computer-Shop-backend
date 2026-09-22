@@ -10,9 +10,9 @@ export default function AuthModal({ isOpen, onClose }) {
                 <div className="flex gap-4 w-full">
                     <button 
                         onClick={() => {
-                            window.location.href = "/signin"; // Login page එකට යවන්න
-                        }} 
-                        className="flex-1 px-4 py-2 bg-accent text-white font-bold rounded-lg hover:bg-accent/80 transition"
+                            window.location.href = "/signin"; 
+                        }}
+                        className="flex-1 px-4 py-2 bg-blue-200 text-gray-800 font-bold rounded-lg hover:bg-gray-300 transition"
                     >
                         Login
                     </button>

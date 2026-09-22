@@ -21,8 +21,8 @@ export default function ContactUs() {
         setLoading(true);
 
         try {
-            // අවශ්‍ය නම් මෙයට අදාළ Backend Endpoint එකක් සකස් කර සම්බන්ධ කළ හැක.
-            // උදාහරණයක් ලෙස: await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/contact", formData);
+            
+        
             
             toast.success("Your message has been sent successfully!");
             setFormData({ name: "", email: "", subject: "", message: "" });

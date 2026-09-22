@@ -10,7 +10,7 @@ import Home from "./homeContent";
 import ProductPage from "./productPage";
 import ProductOverview from "./productOverview";
 import CartPage from "./cartPage";
-import CheckOutPage from "./checkOutPage";
+import CheckOutPage from "./checkOut";
 import Settings from "./setting";
 //import OrdersPage from "./ordersPage";
 //import AboutPage from "./aboutPage";
@@ -30,8 +30,7 @@ export default function HomePage(props) {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/checkout" element={<CheckOutPage />} />
                     <Route path="/setting" element = {<Settings />} />
-                    {/* <Route path="/orders" element={<OrdersPage />} />
-                    <Route path="/about" element={<AboutPage />} />*/}
+                    
                     <Route path="/contact" element={<ContactUs />} /> 
                     <Route path="/my-orders" element={<MyOrders />} />
                     

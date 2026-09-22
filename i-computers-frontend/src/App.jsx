@@ -8,11 +8,12 @@ import TestPage from './pages/Test'
 import { Toaster } from 'react-hot-toast'
 import axios from "axios";
 import ForgotPasswordPage from './pages/forgotPassword';
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
   return (
     <>
+   <GoogleOAuthProvider clientId="596108182923-nhnkrad78ucrtsb37h6dj23mmrlfum22.apps.googleusercontent.com"></GoogleOAuthProvider>
     <div className='w-full h-screen bg-primary'>
       <Toaster position = "top-right"/>
       <Routes>

@@ -9,23 +9,23 @@ export default function AdminEditProductForm(props) {
     const navigate = useNavigate();
     const location = useLocation();
     
-    // location.state හරහා එන product දත්ත ලබාගැනීම
+    
     const product = location.state;
 
-    // කෙලින්ම URL එකෙන් ආවොත් product එකක් නැති නිසා ආපහු හරවලා යවනවා
+    
     useEffect(() => {
         if (!product) {
             navigate("/admin/product");
         }
     }, [product, navigate]);
 
-    // Initial state අගයන් product එකේ දත්ත වලින් පුරවා ඇත
+    
     const [productName, setProductName] = useState(product?.name || "");
     const [altNames, setAltNames] = useState(product?.altname?.join(", ") || "");
     const [description, setDescription] = useState(product?.description || "");
     const [price, setPrice] = useState(product?.price || "0");
     const [labledPrice, setLabledPrice] = useState(product?.labelledprice || "0");
-    const [files, setFiles] = useState([]); // අලුත් පින්තූර තෝරනවා නම් පමණක්
+    const [files, setFiles] = useState([]); 
     const [isAvailable, setIsAvailable] = useState(product?.isAvailable ?? true);
     const [category, setCategory] = useState(product?.category || "laptops");
     const [stock, setStock] = useState(product?.stock || 0);
@@ -33,7 +33,7 @@ export default function AdminEditProductForm(props) {
     const [model, setModel] = useState(product?.model || "");
     const [loading, setLoading] = useState(false); 
 
-    const productID = product?.productid || product?.productId; // ID එක වෙනස් කරන්න දෙන්නේ නෑ
+    const productID = product?.productid || product?.productId; 
 
     async function updateProduct() {
         if (!productName || !price || !category || !model) {
@@ -52,9 +52,9 @@ export default function AdminEditProductForm(props) {
         const loadingToast = toast.loading("Updating product...");
         
         try {
-            let uploadedImages = product.images; // මුලින්ම පරණ පින්තූර ටික තියාගන්නවා
+            let uploadedImages = product.images; 
 
-            // අලුතෙන් පින්තූර තෝරලා තියෙනවා නම් ඒවා upload කරනවා
+           
             if (files.length > 0) {
                 const imagepromises = [];
                 for (let i = 0; i < files.length; i++) {
@@ -66,14 +66,14 @@ export default function AdminEditProductForm(props) {
             
             const altNameInarray = altNames.split(",").map((name) => name.trim());
 
-            // Backend එකට යවන දත්ත (productid එක යවන්නේ නෑ, ඒක route එකේ යවනවා)
+            
             const updateData = {
                 name: productName,
                 altname: altNameInarray,
                 description: description,
                 price: Number(price),
                 labelledprice: Number(labledPrice),
-                images: uploadedImages, // අලුත් ඒවද පරණ ඒවද කියලා උඩදි තීරණය කළා
+                images: uploadedImages, 
                 isAvailable: isAvailable,
                 category: category,
                 stock: parseInt(stock) || 0,
@@ -81,7 +81,7 @@ export default function AdminEditProductForm(props) {
                 model: model
             };
 
-            // අනිවාර්යයෙන්ම ඔබේ Backend route එක අනුව මෙහි PUT ද PATCH ද යන්න වෙනස් කරගන්න (බොහෝවිට PUT වේ)
+            
             await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${productID}`, updateData, {
                 headers: {
                     Authorization: `Bearer ${Token}`
@@ -100,7 +100,7 @@ export default function AdminEditProductForm(props) {
         }
     }
 
-    if (!product) return null; // product නැත්නම් මුකුත් render කරන්නේ නෑ (useEffect එකෙන් redirect කරනකම්)
+    if (!product) return null; 
 
     return (
         <div className="w-full h-full flex overflow-y-scroll items-start p-[50px] justify-center">
@@ -112,7 +112,7 @@ export default function AdminEditProductForm(props) {
                     
                     <div className='my-[10px] w-[40%]'>
                         <label>Product ID <span className="text-red-500">*</span></label>
-                        {/* ID එක වෙනස් කරන්න බැරි නිසා disabled කර ඇත */}
+                        
                         <input type="text" value={productID} disabled className='w-full p-[10px] h-[40px] border border-gray-400 bg-gray-200 shadow-2xl rounded-xl focus:outline-none px-[20px] cursor-not-allowed' />
                         <p className='w-full text-gray-500 text-right text-sm italic '>Product ID cannot be changed</p>
                     </div>
@@ -145,7 +145,7 @@ export default function AdminEditProductForm(props) {
 
                     <div className='my-[10px] w-full'>
                         <label>Images (Leave empty to keep existing images)</label>
-                        {/* පින්තූර අනිවාර්ය කර නෑ (required අයින් කරලා තියෙන්නේ), මොකද පරණ ඒවා තියෙන නිසා */}
+                        
                         <input type="file" multiple={true} onChange={(e) => setFiles(e.target.files)} className='w-full p-[10px] h-[40px] border border-accent shadow-2xl rounded-xl focus:outline-none focus:ring-accent px-[20px] ' />
                     </div>
 
