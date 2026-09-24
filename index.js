@@ -24,7 +24,8 @@ app.use(helmet()); // Helmet helps secure Express apps by setting various HTTP h
 app.use(cors({
     origin: [
         "http://localhost:5173", 
-        "https://computershopfrontend1-git-main-team-1-b89d.vercel.app" // link to your frontend application
+        "https://computershopfrontend1-git-main-team-1-b89d.vercel.app",
+        "https://computershopfrontend1-2hfx7u0jk-team-1-b89d.vercel.app" // අලුත් Vercel ලින්ක් එක මෙතැනට එකතු කර ඇත
     ],
     credentials: true
 }));
