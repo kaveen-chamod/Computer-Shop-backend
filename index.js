@@ -19,10 +19,13 @@ const mongoDBURI = process.env.MONGO_URI;
 const app = express();
 
 // 1. Security & Global Utility Middlewares (Must be at the top)
-app.use(helmet()); // HTTP headers ආරක්ෂා කිරීම
+app.use(helmet()); // Helmet helps secure Express apps by setting various HTTP headers
 
 app.use(cors({
-    origin: ["http://localhost:5173", "https://your-live-frontend.com"], 
+    origin: [
+        "http://localhost:5173", 
+        "https://computershopfrontend1-git-main-team-1-b89d.vercel.app" // link to your frontend application
+    ],
     credentials: true
 }));
 
@@ -32,8 +35,8 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // Brute-force සහ DDoS ප්‍රහාර වැළැක්වීම සඳහා Rate Limiting
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // විනාඩි 15 ක කාලයක්
-    max: 100, // එක් IP එකකින් විනාඩි 15ට උපරිම requests 100යි
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
     message: "Too many requests from this IP, please try again later."
 });
 app.use("/api/", limiter);
