@@ -17,6 +17,7 @@ dotenv.config();
 const mongoDBURI = process.env.MONGO_URI;
 
 const app = express();
+app.set('trust proxy', 1);
 
 // 1. Security & Global Utility Middlewares (Must be at the top)
 app.use(helmet()); // Helmet helps secure Express apps by setting various HTTP headers
