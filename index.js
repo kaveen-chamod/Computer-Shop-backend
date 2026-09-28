@@ -23,7 +23,7 @@ app.set('trust proxy', 1);
 app.use(helmet()); // Helmet helps secure Express apps by setting various HTTP headers
 
 app.use(cors({
-    origin: true, // මෙලෙස true ලබා දීමෙන් Vercel හි ඕනෑම ලින්ක් එකකට දත්ත ලබා ගැනීමට අවසර ලැබේ
+    origin: true, 
     credentials: true
 }));
 
@@ -35,7 +35,10 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
-    message: "Too many requests from this IP, please try again later."
+    message: "Too many requests from this IP, please try again later.",
+    validate: { 
+        xForwardedForHeader: false // Render හිදී එන X-Forwarded-For දෝෂය මඟ හැරීම
+    }
 });
 app.use("/api/", limiter);
 
